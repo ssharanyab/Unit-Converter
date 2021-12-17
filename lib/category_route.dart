@@ -4,8 +4,15 @@ import 'package:unit_converter/unit.dart';
 
 final _backgroundColor = Colors.yellowAccent[100];
 
-class CategoriesRoute extends StatelessWidget {
+class CategoriesRoute extends StatefulWidget {
   const CategoriesRoute({Key? key}) : super(key: key);
+
+  @override
+  _CategoriesRouteState createState() => _CategoriesRouteState();
+}
+
+class _CategoriesRouteState extends State<CategoriesRoute> {
+  final _categories = <Category>[];
   static const _categoryNames = <String>[
     'Time',
     'Currency',
@@ -26,11 +33,23 @@ class CategoriesRoute extends StatelessWidget {
     Colors.red,
     Colors.grey,
   ];
+  @override
+  void initState() {
+    super.initState();
+    for (var i = 0; i < _categoryNames.length; i++) {
+      _categories.add(Category(
+        name: _categoryNames[i],
+        color: _baseColors[i] as ColorSwatch<dynamic>,
+        iconLocation: Icons.cake,
+        units: _retrieveUnitList(_categoryNames[i]),
+      ));
+    }
+  }
 
-  Widget _buildCategoryWidgets(List<Widget> categories) {
+  Widget _buildCategoryWidgets() {
     return ListView.builder(
-      itemBuilder: (BuildContext context, int index) => categories[index],
-      itemCount: categories.length,
+      itemBuilder: (BuildContext context, int index) => _categories[index],
+      itemCount: _categories.length,
     );
   }
 
@@ -46,35 +65,25 @@ class CategoriesRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = <Category>[];
-    for (var i = 0; i < _categoryNames.length; i++) {
-      categories.add(Category(
-        name: _categoryNames[i],
-        color: _baseColors[i] as ColorSwatch<dynamic>,
-        iconLocation: Icons.cake,
-        units: _retrieveUnitList(_categoryNames[i]),
-      ));
-    }
     final listView = Container(
       color: _backgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: _buildCategoryWidgets(categories),
+      child: _buildCategoryWidgets(),
     );
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _backgroundColor,
-        elevation: 0.0,
-        title: Center(
-          child: Text(
-            'Unit Converter',
-            style: TextStyle(
-              fontSize: 30,
-              color: Colors.black,
-            ),
-          ),
+    final appBar = AppBar(
+      elevation: 0.0,
+      title: const Text(
+        'Unit Converter',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 30.0,
         ),
       ),
+      centerTitle: true,
+      backgroundColor: _backgroundColor,
+    );
+    return Scaffold(
+      appBar: appBar,
       body: listView,
     );
   }
